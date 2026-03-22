@@ -22,7 +22,7 @@ public class HandView : MonoBehaviour
         Spline spline=splineContainer.Spline;
         for(int i = 0; i < cards.Count; i++)
         {
-            float p=firstCardPosition+i*cardSpacing;
+            float p=firstCardPosition+i*cardSpacing+0.001f;
             Vector3 splinePosition=spline.EvaluatePosition(p);
             Vector3 forward=spline.EvaluateTangent(p);
             Vector3 up=spline.EvaluateUpVector(p);
