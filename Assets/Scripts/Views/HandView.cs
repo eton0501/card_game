@@ -1,5 +1,6 @@
 using System.Collections;
 using System.Collections.Generic;
+using System.Linq;
 using DG.Tweening;
 using Unity.Mathematics;
 using UnityEngine;
@@ -14,6 +15,18 @@ public class HandView : MonoBehaviour
         cards.Add(cardView);
         yield return UpdateCardPositions(0.15f);
     }
+    public CardView RemoveCard(Card card)
+    {
+        CardView cardView=GetCardView(card);
+        if(cardView==null)return null;
+        cards.Remove(cardView);
+        StartCoroutine(UpdateCardPositions(0.15f));
+        return cardView;
+    }
+    private CardView GetCardView(Card card)
+    {
+        return cards.Where(CardView=>CardView.Card==card).FirstOrDefault();
+    }
     private IEnumerator UpdateCardPositions(float duration)
     {
         if(cards.Count==0)yield break;
@@ -22,7 +35,7 @@ public class HandView : MonoBehaviour
         Spline spline=splineContainer.Spline;
         for(int i = 0; i < cards.Count; i++)
         {
-            float p=firstCardPosition+i*cardSpacing+0.001f;
+            float p=firstCardPosition+i*cardSpacing;
             Vector3 splinePosition=spline.EvaluatePosition(p);
             Vector3 forward=spline.EvaluateTangent(p);
             Vector3 up=spline.EvaluateUpVector(p);
