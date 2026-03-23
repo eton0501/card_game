@@ -450,7 +450,7 @@ GameObject:
   - component: {fileID: 7560946583058938785}
   - component: {fileID: 2018156730071465437}
   - component: {fileID: 8292781273395867153}
-  - component: {fileID: 261760652661172113}
+  - component: {fileID: 4254189893562219499}
   m_Layer: 0
   m_Name: CardView
   m_TagString: Untagged
@@ -491,6 +491,9 @@ MonoBehaviour:
   mana: {fileID: 172329913442952676}
   imageSR: {fileID: 1577827492798073248}
   wrapper: {fileID: 7117895339575564150}
+  dropLayer:
+    serializedVersion: 2
+    m_Bits: 64
 --- !u!210 &8292781273395867153
 SortingGroup:
   m_ObjectHideFlags: 0
@@ -503,7 +506,7 @@ SortingGroup:
   m_SortingLayer: 0
   m_SortingOrder: 0
   m_SortAtRoot: 0
---- !u!65 &261760652661172113
+--- !u!65 &4254189893562219499
 BoxCollider:
   m_ObjectHideFlags: 0
   m_CorrespondingSourceObject: {fileID: 0}
@@ -522,8 +525,8 @@ BoxCollider:
   m_ProvidesContacts: 0
   m_Enabled: 1
   serializedVersion: 3
-  m_Size: {x: 3.7239203, y: 4.752717, z: 0.6332193}
-  m_Center: {x: 0.03789884, y: 3.5928884, z: 0.18339023}
+  m_Size: {x: 3.6, y: 4.75212, z: 0.01}
+  m_Center: {x: 0, y: 3.6101775, z: 0}
 --- !u!1 &7117895339575564150
 GameObject:
   m_ObjectHideFlags: 0
