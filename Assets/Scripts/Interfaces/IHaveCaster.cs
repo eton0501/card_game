@@ -1,6 +1,8 @@
 using UnityEngine;
-
+/// <summary>
+/// 定義有施放者資訊
+/// </summary>
 public interface IHaveCaster 
 {
-   CombatantView Caster{get;}
+   CombatantView Caster{get;}//回傳施放者
 }

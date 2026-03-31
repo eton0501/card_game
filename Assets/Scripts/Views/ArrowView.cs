@@ -1,19 +1,21 @@
 using UnityEngine;
-
+/// <summary>
+/// 控制拖移瞄準用的箭頭視覺
+/// </summary>
 public class ArrowView : MonoBehaviour
 {
-    [SerializeField] private GameObject arrowHead;
-    [SerializeField] private LineRenderer lineRenderer;
-    private Vector3 startPosition;
+    [SerializeField] private GameObject arrowHead;//箭頭頭部物件
+    [SerializeField] private LineRenderer lineRenderer;//箭身物件
+    private Vector3 startPosition;//箭頭起點
     private void Update()
     {
-        Vector3 endPosition=MouseUtil.GetMousePositionInWorldSpace();
-        Vector3 direction=-(startPosition-arrowHead.transform.position).normalized;
-        lineRenderer.SetPosition(1,endPosition-direction*0.5f);
-        arrowHead.transform.position=endPosition;
-        arrowHead.transform.right=direction;
+        Vector3 endPosition=MouseUtil.GetMousePositionInWorldSpace();//取得滑鼠目前在世界座標中的位置當作箭頭終點
+        Vector3 direction=-(startPosition-arrowHead.transform.position).normalized;//計算箭頭方向向量並正規化
+        lineRenderer.SetPosition(1,endPosition-direction*0.5f);//設定線段終點
+        arrowHead.transform.position=endPosition;//把箭頭頭部移到滑鼠位置
+        arrowHead.transform.right=direction;//
     }
-    public void SetupArrow(Vector3 startPosition)
+    public void SetupArrow(Vector3 startPosition)//外部初始化箭頭時呼叫
     {
         this.startPosition=startPosition;
         lineRenderer.SetPosition(0,startPosition);

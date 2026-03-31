@@ -4,15 +4,17 @@ using System.Collections;
 using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
-
+/// <summary>
+/// 統一管理所有遊戲行動的順序、連鎖反應
+/// </summary>
 public class ActionSystem : Singleton<ActionSystem>//宣告類別，繼承自Singleton
 {
-    private List<GameAction> reactions=null;//定義一個只能放GameAction類別的List，變數名稱為reactions
+    private List<GameAction> reactions=null;//目前正在關注的反應串列(PRE、PER、POST)
     public bool IsPerforming{get;private set;}=false;//標記系統目前是否正在執行動作
     private static Dictionary<Type,List<Action<GameAction>>>preSubs=new();//建立一個儲存所有訂閱動作執行前要做的方式
     private static Dictionary<Type,List<Action<GameAction>>>postSubs=new();//建立一個儲存所有訂閱動作執行後要做的方式
     private static Dictionary<Type,Func<GameAction,IEnumerator>>performers=new();//儲存執行特定動作的協程函數
-    public void Perform(GameAction action,System.Action OnPerformFinished = null)//外部可以呼叫這個方法開始執行一個遊戲動作，並且可傳入執行完畢後的回乎函數
+    public void Perform(GameAction action,System.Action OnPerformFinished = null)//外部可以呼叫這個函式開始執行一個遊戲行動
     {
         if(IsPerforming)return;//如果系統在執行其他動作，則直接取消
         IsPerforming=true;//將狀態設為正在執行中
@@ -26,7 +28,7 @@ public class ActionSystem : Singleton<ActionSystem>//宣告類別，繼承自Sin
     {
         reactions?.Add(gameAction);//如果目前的reactions串列存在就把新動作加進去
     }
-    private IEnumerator Flow(GameAction action,Action OnFlowFinished = null)//控制動作的完整生命週期
+    private IEnumerator Flow(GameAction action,Action OnFlowFinished = null)//控制動作的完整生命週期(PRE->行動本體->POST)
     {
         reactions=action.PreReactions;//把當前的關注的串列切換為這個動作的執行前反應
         PerformSubscribers(action,preSubs);//觸發所有訂閱這個動作PRE階段的方式
@@ -50,40 +52,40 @@ public class ActionSystem : Singleton<ActionSystem>//宣告類別，繼承自Sin
             yield return performers[type](action);//如果有就執行
         }
     }
-    private void PerformSubscribers(GameAction action, Dictionary<Type, List<Action<GameAction>>> subs)
+    private void PerformSubscribers(GameAction action, Dictionary<Type, List<Action<GameAction>>> subs)//觸發所有訂閱指定行動的回呼函式
     {
         Type type=action.GetType();
         if (subs.ContainsKey(type))
         {
             foreach(var sub in subs[type])
             {
-                sub(action);
+                sub(action);//依序呼叫每個訂閱者的回呼函式
             }
         }   
     }
-    private IEnumerator PerformReactions()
+    private IEnumerator PerformReactions()//依序執行目前reactions串列中的所有連鎖反應
     {
         foreach(var reaction in reactions)
         {
             yield return Flow(reaction);
         }
     }
-    public static void AttachPerformer<T>(Func<T,IEnumerator>performer)where T : GameAction
+    public static void AttachPerformer<T>(Func<T,IEnumerator>performer)where T : GameAction//向ActionSystem註冊指定行動型別的Performer
     {
         Type type=typeof(T);
         IEnumerator wrappedPerformer(GameAction action)=>performer((T)action);
         if(performers.ContainsKey(type))performers[type]=wrappedPerformer;
         else performers.Add(type,wrappedPerformer);
     }
-    public static void DetachPerformer<T>() where T: GameAction
+    public static void DetachPerformer<T>() where T: GameAction//從ActionSystem移除指定行動型別的Performer
     {
         Type type=typeof(T);
         if(performers.ContainsKey(type)) performers.Remove(type);
     }
-    public static void SubscribeReaction<T>(Action<T> reaction,ReactionTiming timing)where T : GameAction
+    public static void SubscribeReaction<T>(Action<T> reaction,ReactionTiming timing)where T : GameAction//訂閱指定行動型別在特定時機(PRE或POST)的通知
     {
-        Dictionary<Type,List<Action<GameAction>>>subs=timing==ReactionTiming.PRE? preSubs:postSubs;
-        void wrappedReaction(GameAction action)=>reaction((T)action);
+        Dictionary<Type,List<Action<GameAction>>>subs=timing==ReactionTiming.PRE? preSubs:postSubs;//根據timing決定要加入preSubs還是postSubs
+        void wrappedReaction(GameAction action)=>reaction((T)action);//包裝回呼函式
         if (subs.ContainsKey(typeof(T)))
         {
             subs[typeof(T)].Add(wrappedReaction);
@@ -94,7 +96,7 @@ public class ActionSystem : Singleton<ActionSystem>//宣告類別，繼承自Sin
             subs[typeof(T)].Add(wrappedReaction);
         }
     }
-    public static void UnsubscribeReaction<T>(Action<T> reaction,ReactionTiming timing) where T : GameAction
+    public static void UnsubscribeReaction<T>(Action<T> reaction,ReactionTiming timing) where T : GameAction//取消訂閱指定行動型別在特定時機的通知
     {
         Dictionary<Type,List<Action<GameAction>>>subs=timing==ReactionTiming.PRE?preSubs:postSubs;
         if (subs.ContainsKey(typeof(T)))

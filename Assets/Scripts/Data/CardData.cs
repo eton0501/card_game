@@ -1,6 +1,9 @@
 using System.Collections.Generic;
 using UnityEngine;
 using SerializeReferenceEditor;
+/// <summary>
+/// 卡牌的資料容器
+/// </summary>
 [CreateAssetMenu(menuName ="Data/Card")]
 public class CardData : ScriptableObject
 {
