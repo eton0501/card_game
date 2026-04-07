@@ -5,7 +5,7 @@
 
 ---
 ## 線上試玩
-**[點擊此處立刻在瀏覽器中遊玩]([https://eton0501.github.io/card_game/]))**
+**[點擊此處立刻在瀏覽器中遊玩](https://eton0501.github.io/card_game/)**
 
 ## 遊戲畫面
 ![戰鬥畫面截圖](<img width="1889" height="1029" alt="image" src="https://github.com/user-attachments/assets/f5a1a755-483a-48ea-81d5-dab0c7e0ccf3" />
