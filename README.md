@@ -8,7 +8,7 @@
 **[點擊此處立刻在瀏覽器中遊玩](https://eton0501.github.io/card_game/)**
 
 ## 遊戲畫面
-![戰鬥畫面截圖](<img width="1889" height="1029" alt="image" src="https://github.com/user-attachments/assets/f5a1a755-483a-48ea-81d5-dab0c7e0ccf3" />
+![戰鬥畫面截圖](<img width="1895" height="1067" alt="cardgame1" src="https://github.com/user-attachments/assets/dc3be021-cde0-4f21-a5ff-f9a4f1b0b8a8" />
 )
 ![地圖畫面](<img width="1079" height="986" alt="image" src="https://github.com/user-attachments/assets/66c8db5c-b605-4628-8195-c0ae85699a65" />)
 ---
