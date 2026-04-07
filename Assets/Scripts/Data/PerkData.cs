@@ -1,9 +1,9 @@
 using UnityEngine;
 using SerializeReferenceEditor;
 using Unity.VisualScripting;
-using UnityEditor.ShaderKeywordFilter;
+
 /// <summary>
-/// 儲存 Perk 的條件與效果設定，定義該 Perk 觸發時要作用的目標與行為。
+/// 儲存Perk的條件與效果設定，定義該Perk觸發時要作用的目標與行為。
 /// </summary>
 [CreateAssetMenu(menuName ="Data/Perk")]
 public class PerkData : ScriptableObject
