@@ -4,7 +4,14 @@
 > 目標是練習「**卡牌效果設計** + **戰鬥流程系統化** + **路線地圖推進** + **UI互動手感**」。
 
 ---
+## 線上試玩
+**[點擊此處立刻在瀏覽器中遊玩]([https://eton0501.github.io/card_game/]))**
 
+## 遊戲畫面
+![戰鬥畫面截圖](<img width="1889" height="1029" alt="image" src="https://github.com/user-attachments/assets/f5a1a755-483a-48ea-81d5-dab0c7e0ccf3" />
+)
+![地圖畫面](<img width="1079" height="986" alt="image" src="https://github.com/user-attachments/assets/66c8db5c-b605-4628-8195-c0ae85699a65" />)
+---
 ## 專案簡介
 這個專案使用Unity製作，核心特色是把戰鬥中的行為都抽象成 `GameAction`，由 `ActionSystem` 統一使用。
 目前已具備可遊玩的完整流程：`開始遊戲` ➔ `地圖選點` ➔ `戰鬥/商店/休息` ➔ `獲勝獎勵` ➔ `繼續推圖` ➔ `結束畫面`。
