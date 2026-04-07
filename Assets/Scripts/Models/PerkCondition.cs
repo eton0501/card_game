@@ -1,8 +1,11 @@
 using UnityEngine;
 using System;
+
 /// <summary>
-/// 定義天賦觸發條件的抽象基底
+/// Perk觸發條件的抽象基底，定義如何訂閱事件、退訂與判斷是否成立。
 /// </summary>
+
+
 public abstract class PerkCondition 
 {
     [SerializeField] protected ReactionTiming reactionTiming;//設定要監聽的時機

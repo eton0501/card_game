@@ -1,7 +1,10 @@
 using UnityEngine;
+
 /// <summary>
-/// 管理手動選取目標，開始瞄準時顯示箭頭，結束瞄準用Raycast判斷是否選到敵人
+/// 處理手動指定目標流程。
 /// </summary>
+
+
 public class ManualTargetSystem : Singleton<ManualTargetSystem>
 {
     [SerializeField] private ArrowView arrowView;//箭頭視覺物件

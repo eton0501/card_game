@@ -12,8 +12,9 @@ MonoBehaviour:
   m_Script: {fileID: 11500000, guid: affab96eaec633249bf9db0437f1fabc, type: 3}
   m_Name: Armor Up
   m_EditorClassIdentifier: 
-  <Description>k__BackingField: Add 5 armor.
+  <Description>k__BackingField: get 5 Armor.
   <Mana>k__BackingField: 1
+  <ShopCost>k__BackingField: 45
   <Image>k__BackingField: {fileID: 21300000, guid: 4ea5d7b69dc95464883331ccc29cba1c, type: 3}
   <ManualTargetEffect>k__BackingField:
     rid: -2

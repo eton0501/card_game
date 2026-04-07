@@ -1,8 +1,10 @@
 using System;
 using UnityEngine;
+
 /// <summary>
-/// 定義敵人攻擊時的天賦觸發條件
+/// 監聽AttackHeroGA，在指定時機觸發Perk反應。
 /// </summary>
+
 public class OnEnemyAttackCondition : PerkCondition
 {
     public override bool SubConditionIsMet(GameAction gameAction)//檢查此行動是否符合條件

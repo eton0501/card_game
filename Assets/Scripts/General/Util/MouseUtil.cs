@@ -1,7 +1,9 @@
 using UnityEngine;
+
 /// <summary>
-/// 負責將螢幕上2D滑鼠座標轉換為遊戲世界中的3D座標
+/// 把滑鼠螢幕座標轉成世界座標，給拖曳卡牌與瞄準系統使用。
 /// </summary>
+
 public class MouseUtil
 {
     private static Camera camera=Camera.main;//取得主攝影機

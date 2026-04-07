@@ -1,8 +1,10 @@
 using UnityEngine;
+
 /// <summary>
-/// 負責管理滑鼠懸停時顯示的放大卡牌預覽
-/// 因為整個遊戲只有一個放大預覽視窗，所以使用Singleton
+/// 管理放大預覽卡顯示。
 /// </summary>
+
+
 public class CardViewHoverSystem : Singleton<CardViewHoverSystem>
 {
     [SerializeField] private CardView cardViewHover;//專門用來顯示放大預覽的CardView物件

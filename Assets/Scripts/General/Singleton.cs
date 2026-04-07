@@ -1,5 +1,9 @@
 using UnityEngine;
 
+/// <summary>
+/// 單例基底，確保同類型系統在場景中只保留一個實例。
+/// </summary>
+
 public abstract class Singleton<T> : MonoBehaviour where T:MonoBehaviour
 {
     public static T Instance{get;private set;}//任何地方都能透過ClassName.Instance來存取
@@ -18,6 +22,11 @@ public abstract class Singleton<T> : MonoBehaviour where T:MonoBehaviour
         Destroy(gameObject);//摧毀物件
     }
 }
+
+/// <summary>
+/// 不隨場景切換而摧毀的單例基底，適合跨場景共用。
+/// </summary>
+
 public abstract class PersistentSingleton<T> : Singleton<T> where T : MonoBehaviour
 {
     protected override void Awake()

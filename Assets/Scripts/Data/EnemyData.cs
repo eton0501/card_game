@@ -1,7 +1,9 @@
 using UnityEngine;
+
 /// <summary>
-/// 敵人的資料容器
+/// 儲存敵人的靜態數值與外觀資料，提供生成敵人時使用。
 /// </summary>
+
 [CreateAssetMenu(menuName ="Data/Enemy")]
 public class EnemyData : ScriptableObject
 {

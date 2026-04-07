@@ -1,9 +1,12 @@
 using UnityEngine.UI;
 using TMPro;
 using UnityEngine;
+
 /// <summary>
-/// 控制單一狀態效果的UI顯示
+/// 顯示單一狀態圖示與層數文字。
 /// </summary>
+
+
 public class StatusEffectUI : MonoBehaviour
 {
     [SerializeField] private Image image;

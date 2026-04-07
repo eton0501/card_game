@@ -2,47 +2,209 @@ using System.Collections;
 using System.Collections.Generic;
 using System.Linq;
 using DG.Tweening;
-using Unity.Mathematics;
 using UnityEngine;
 using UnityEngine.Splines;
 
+/// <summary>
+/// 控制手牌沿曲線排版、滑鼠懸停放大。
+/// </summary>
+
+
 public class HandView : MonoBehaviour
 {
-    [SerializeField] private SplineContainer splineContainer;//定義手牌曲線的Spline
-    private readonly List<CardView> cards=new();//目前手牌中所有CardView的清單
-    public IEnumerator AddCard(CardView cardView)//將一張新卡牌加入手牌
+    [Header("Layout")]
+    [SerializeField] private SplineContainer splineContainer;
+    [SerializeField] private float baseCardSpacing = 0.1f;
+    [SerializeField] private float minCardSpacing = 0.055f;
+    [SerializeField] private float depthStep = 0.01f;
+    [SerializeField] private Vector3 handWorldOffset = Vector3.zero;
+    [SerializeField, Range(0f, 0.45f)] private float minSplinePosition = 0.18f;
+    [SerializeField, Range(0.55f, 1f)] private float maxSplinePosition = 0.82f;
+    [SerializeField] private int spacingTightenStartCount = 5;
+    [SerializeField] private float spacingReducePerCard = 0.005f;
+    [SerializeField] private int crowdLiftStartCount = 6;
+    [SerializeField] private float crowdLiftPerCard = 0.045f;
+    [SerializeField] private float maxCrowdLift = 0.22f;
+    [SerializeField] private int flattenRotationStartCount = 7;
+    [SerializeField, Range(0f, 1f)] private float maxRotationFlatten = 0.35f;
+
+    [Header("Hover Feel")]
+    [SerializeField] private float hoverLift = 0.85f;
+    [SerializeField] private float hoverScale = 1.18f;
+    [SerializeField] private float hoverDepthBoost = 0.45f;
+    [SerializeField] private float maxHoverWorldY = -0.15f;
+    [SerializeField] private float neighborPushOnSpline = 0.03f;
+    [SerializeField] private float hoverLayoutDuration = 0.12f;
+
+    [Header("Default Timing")]
+    [SerializeField] private float defaultLayoutDuration = 0.15f;
+
+    private readonly List<CardView> cards = new();
+    private CardView hoveredCard;
+    private CardView draggingCard;
+
+    public IEnumerator AddCard(CardView cardView)
     {
-        cards.Add(cardView);//將新卡牌加入清單
-        yield return UpdateCardPositions(0.15f);//等待所有卡牌移動動畫結束
+        if (cardView == null) yield break;
+
+        cardView.SetOwnerHand(this);
+        cards.Add(cardView);
+        yield return UpdateCardPositions(defaultLayoutDuration);
     }
-    public CardView RemoveCard(Card card)//從手牌移除指定的卡牌，並且觸發剩餘卡牌的重新排列動畫
+
+    public CardView RemoveCard(Card card)
     {
-        CardView cardView=GetCardView(card);//根據card資料找到對應的CardView
-        if(cardView==null)return null;//若找不到則回傳null
-        cards.Remove(cardView);//從清單中移除
-        StartCoroutine(UpdateCardPositions(0.15f));//觸發剩餘卡牌重新排列動畫
-        return cardView;//回傳被移除的cardView
+        CardView cardView = GetCardView(card);
+        if (cardView == null) return null;
+
+        if (hoveredCard == cardView) hoveredCard = null;
+        if (draggingCard == cardView) draggingCard = null;
+
+        cards.Remove(cardView);
+        StartCoroutine(UpdateCardPositions(defaultLayoutDuration));
+        return cardView;
     }
-    private CardView GetCardView(Card card)//根據card資料取得清單中的CardView
+
+    public void OnCardHoverEnter(CardView cardView)
     {
-        return cards.Where(CardView=>CardView.Card==card).FirstOrDefault();//找到對應的CardView，找不到則回傳null
+        if (cardView == null) return;
+        if (!cards.Contains(cardView)) return;
+        if (draggingCard != null) return;
+        if (hoveredCard == cardView) return;
+
+        hoveredCard = cardView;
+        StartCoroutine(UpdateCardPositions(hoverLayoutDuration));
     }
-    private IEnumerator UpdateCardPositions(float duration)//根據目前手牌數量重新計算每張牌在Spline上的位置和旋轉
+
+    public void OnCardHoverExit(CardView cardView)
     {
-        if(cards.Count==0)yield break;//如果手牌數量為0則直接結束
-        float cardSpacing=1f/10f;//每張牌之間在Spline上的間距
-        float firstCardPosition=0.5f-(cards.Count-1)*cardSpacing/2;//計算第一張牌的起始位置
-        Spline spline=splineContainer.Spline;//取得Spline資料
-        for(int i = 0; i < cards.Count; i++)
+        if (hoveredCard != cardView) return;
+
+        hoveredCard = null;
+        StartCoroutine(UpdateCardPositions(hoverLayoutDuration));
+    }
+
+    public void ClearHover()
+    {
+        if (hoveredCard == null) return;
+        hoveredCard = null;
+        StartCoroutine(UpdateCardPositions(hoverLayoutDuration));
+    }
+
+    public void OnCardDragStart(CardView cardView)
+    {
+        draggingCard = cardView;
+        if (hoveredCard == cardView)
         {
-            float p=firstCardPosition+i*cardSpacing;//計算第i張牌在spline上的參數位置(0~1之間)
-            Vector3 splinePosition=spline.EvaluatePosition(p);//從Spline取得該參數位置對應的世界座標
-            Vector3 forward=spline.EvaluateTangent(p);//取得該點的切線方向(Spline的前進方向)
-            Vector3 up=spline.EvaluateUpVector(p);//取得該點的上方向(決定卡牌的傾斜角度)
-            Quaternion rotation=Quaternion.LookRotation(-up,Vector3.Cross(-up,forward).normalized);//計算出卡牌的旋轉角度
-            cards[i].transform.DOMove(splinePosition+transform.position+0.01f*i*Vector3.back,duration);//平滑移動卡牌到Spline上的對應位置
-            cards[i].transform.DORotate(rotation.eulerAngles,duration);//平滑旋轉卡牌到Spline曲線對應的角度
+            hoveredCard = null;
         }
-        yield return new WaitForSeconds(duration);//等待動畫撥放完畢
+
+        StartCoroutine(UpdateCardPositions(hoverLayoutDuration));
+    }
+
+    public void OnCardDragEnd(CardView cardView)
+    {
+        if (draggingCard != cardView) return;
+
+        draggingCard = null;
+        StartCoroutine(UpdateCardPositions(hoverLayoutDuration));
+    }
+
+    private CardView GetCardView(Card card)
+    {
+        return cards.Where(view => view.Card == card).FirstOrDefault();
+    }
+
+    private IEnumerator UpdateCardPositions(float duration)
+    {
+        if (cards.Count == 0) yield break;
+        if (splineContainer == null) yield break;
+
+        int cardCount = cards.Count;
+        float availableSplineSpan = Mathf.Max(0f, maxSplinePosition - minSplinePosition);
+        float wantedSpacing = Mathf.Clamp(
+            baseCardSpacing - Mathf.Max(0, cardCount - spacingTightenStartCount) * spacingReducePerCard,
+            minCardSpacing,
+            baseCardSpacing
+        );
+
+        float maxSpacingAllowedByBounds = cardCount <= 1 ? wantedSpacing : availableSplineSpan / (cardCount - 1);
+        float dynamicSpacing = Mathf.Min(wantedSpacing, maxSpacingAllowedByBounds);
+
+        float totalSpan = (cardCount - 1) * dynamicSpacing;
+        float firstCardPosition = 0.5f - totalSpan / 2f;
+        firstCardPosition = Mathf.Clamp(firstCardPosition, minSplinePosition, maxSplinePosition - totalSpan);
+
+        int crowdedCards = Mathf.Max(0, cardCount - crowdLiftStartCount);
+        float crowdLift = Mathf.Min(maxCrowdLift, crowdedCards * crowdLiftPerCard);
+        float flattenFactor = Mathf.Clamp01((cardCount - flattenRotationStartCount) / 5f) * maxRotationFlatten;
+
+        Spline spline = splineContainer.Spline;
+
+        int hoveredIndex = hoveredCard != null ? cards.IndexOf(hoveredCard) : -1;
+
+        for (int i = 0; i < cardCount; i++)
+        {
+            CardView cardView = cards[i];
+            if (cardView == null) continue;
+
+            float p = firstCardPosition + i * dynamicSpacing;
+            if (hoveredIndex >= 0)
+            {
+                if (i < hoveredIndex) p -= neighborPushOnSpline;
+                else if (i > hoveredIndex) p += neighborPushOnSpline;
+            }
+            p = Mathf.Clamp(p, minSplinePosition, maxSplinePosition);
+
+            Vector3 splinePosition = spline.EvaluatePosition(p);
+            Vector3 forward = spline.EvaluateTangent(p);
+            Vector3 up = spline.EvaluateUpVector(p);
+            Quaternion rotation = Quaternion.LookRotation(
+                -up,
+                Vector3.Cross(-up, forward).normalized
+            );
+
+            Vector3 targetPosition =
+                splinePosition +
+                transform.position +
+                handWorldOffset +
+                depthStep * i * Vector3.forward;
+            targetPosition.y += crowdLift;
+            Quaternion targetRotation = rotation;
+            float targetScale = 1f;
+            int targetSortingOrder = i;
+
+            if (cardView == draggingCard)
+            {
+                targetSortingOrder = cards.Count + 200;
+                cardView.SetSortingOrder(targetSortingOrder);
+                continue;
+            }
+
+            if (i == hoveredIndex)
+            {
+                float liftedY = targetPosition.y + hoverLift;
+                targetPosition.y = Mathf.Min(liftedY, maxHoverWorldY);
+                targetPosition += Vector3.forward * hoverDepthBoost;
+                targetRotation = Quaternion.identity;
+                targetScale = hoverScale;
+                targetSortingOrder = cards.Count + 100;
+            }
+            else if (flattenFactor > 0f)
+            {
+                targetRotation = Quaternion.Slerp(targetRotation, Quaternion.identity, flattenFactor);
+            }
+
+            cardView.transform.DOKill();
+            cardView.transform.DOMove(targetPosition, duration).SetEase(Ease.OutQuad);
+            cardView.transform.DORotate(targetRotation.eulerAngles, duration).SetEase(Ease.OutQuad);
+            cardView.transform.DOScale(Vector3.one * targetScale, duration).SetEase(Ease.OutQuad);
+            cardView.SetSortingOrder(targetSortingOrder);
+        }
+
+        if (duration > 0f)
+        {
+            yield return new WaitForSeconds(duration);
+        }
     }
 }

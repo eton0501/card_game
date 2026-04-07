@@ -1,7 +1,10 @@
 using UnityEngine;
+
 /// <summary>
-/// 控制拖移瞄準用的箭頭視覺
+/// 控制手動指定目標時的箭頭顯示。
 /// </summary>
+
+
 public class ArrowView : MonoBehaviour
 {
     [SerializeField] private GameObject arrowHead;//箭頭頭部物件

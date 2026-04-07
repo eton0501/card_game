@@ -1,7 +1,10 @@
 using UnityEngine;
+
 /// <summary>
-/// 套用燃燒傷害的遊戲行動資料
+/// 描述一次燃燒結算行動：燃燒傷害值與受影響目標。
 /// </summary>
+
+
 public class ApplyBurnGA : GameAction
 {
     public int BurnDamage{get;private set;}//本次燃燒要造成的傷害

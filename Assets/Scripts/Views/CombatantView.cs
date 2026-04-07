@@ -2,84 +2,157 @@ using System.Collections.Generic;
 using DG.Tweening;
 using TMPro;
 using UnityEngine;
+
 /// <summary>
-/// 所有生物的基底類別
-/// 提供血量管理、受傷計算、狀態效果等所有戰鬥者共用的功能
+/// 英雄和敵人共用戰鬥基底，負責血量、受傷、護甲抵擋、狀態堆疊與傷害修正。
 /// </summary>
+
+
 public class CombatantView : MonoBehaviour
 {
-   [SerializeField] private TMP_Text healthText;//顯示目前血量的文字元件
-   [SerializeField] private SpriteRenderer spriteRenderer;//顯示這個生物圖片的元件
-   [SerializeField] private StatusEffectsUI statusEffectsUI;//顯示狀態效果的UI元件
-   public int MaxHealth{get;private set;}//血量上限
-   public int CurrentHealth{get;private set;}//目前血量
-   private Dictionary<StatusEffectType,int>statusEffects=new();//用字典儲存目前身上所有狀態效果和對應的層數
-   protected void SetupBase(int health,Sprite image)//初始化生物
+    [SerializeField] private TMP_Text healthText;
+    [SerializeField] private SpriteRenderer spriteRenderer;
+    [SerializeField] private StatusEffectsUI statusEffectsUI;
+
+    public int MaxHealth { get; private set; }
+    public int CurrentHealth { get; private set; }
+
+    private readonly Dictionary<StatusEffectType, int> statusEffects = new();
+
+    protected void SetupBase(int health, Sprite image)
     {
-        MaxHealth=CurrentHealth=health;//同時設定血量上限和目前血量
-        spriteRenderer.sprite=image;//設定角色圖片
-        UpdataHealthText();//更新血量顯示
+        MaxHealth = CurrentHealth = health;
+        spriteRenderer.sprite = image;
+        UpdateHealthText();
     }
-    private void UpdataHealthText()//更新血量文字
+
+    public void Damage(int damageAmount)
     {
-        healthText.text="HP: "+CurrentHealth;
-    }
-    public void Damage(int damageAmount)//對這個生物造成傷害
-    {
-        int remainingDamage=damageAmount;//紀錄還沒被抵銷的傷害
-        int currentArmor=GetStatusEffectStacks(StatusEffectType.ARMOR);//取得目前的護甲層數
+        int remainingDamage = damageAmount;
+        int currentArmor = GetStatusEffectStacks(StatusEffectType.ARMOR);
+
         if (currentArmor > 0)
         {
-            if (currentArmor >= damageAmount)
+            if (currentArmor >= remainingDamage)
             {
-                RemoveStatusEffect(StatusEffectType.ARMOR,remainingDamage);
-                remainingDamage=0;
+                RemoveStatusEffect(StatusEffectType.ARMOR, remainingDamage);
+                remainingDamage = 0;
             }
-            else if (currentArmor < damageAmount)
+            else
             {
-                RemoveStatusEffect(StatusEffectType.ARMOR,currentArmor);
-                remainingDamage-=currentArmor;
+                RemoveStatusEffect(StatusEffectType.ARMOR, currentArmor);
+                remainingDamage -= currentArmor;
             }
         }
+
         if (remainingDamage > 0)
         {
-            CurrentHealth-=remainingDamage;
-            if (CurrentHealth < 0)//確保血量不低於0
+            CurrentHealth -= remainingDamage;
+            if (CurrentHealth < 0)
             {
-                CurrentHealth=0;
+                CurrentHealth = 0;
             }
         }
-        
-        transform.DOShakePosition(0.2f,0.5f);//受傷時的震動動畫
-        UpdataHealthText();//更新血量顯示
+
+        transform.DOShakePosition(0.2f, 0.5f);
+        UpdateHealthText();
     }
-    public void AddStatusEffect(StatusEffectType type,int stackCount)//增加指定狀態效果的層數
+
+    public int ModifyOutgoingAttackDamage(int baseDamage)
     {
+        int damage = Mathf.Max(0, baseDamage);
+        int weakStacks = GetStatusEffectStacks(StatusEffectType.WEAK);
+        if (weakStacks > 0)
+        {
+            damage = Mathf.FloorToInt(damage * 0.75f);
+        }
+        return Mathf.Max(0, damage);
+    }
+
+    public int ModifyIncomingAttackDamage(int baseDamage)
+    {
+        int damage = Mathf.Max(0, baseDamage);
+        int vulnerableStacks = GetStatusEffectStacks(StatusEffectType.VULNERABLE);
+        if (vulnerableStacks > 0)
+        {
+            damage = Mathf.FloorToInt(damage * 1.5f);
+        }
+        return Mathf.Max(0, damage);
+    }
+
+    public void TickTurnBasedDebuffs()
+    {
+        ReduceStatusIfPresent(StatusEffectType.WEAK, 1);
+        ReduceStatusIfPresent(StatusEffectType.VULNERABLE, 1);
+    }
+
+    public void HealByPercent(float percent)
+    {
+        if (percent <= 0f) return;
+        int healAmount = Mathf.CeilToInt(MaxHealth * percent);
+        Heal(healAmount);
+    }
+
+    public void Heal(int amount)
+    {
+        if (amount <= 0) return;
+        CurrentHealth += amount;
+        if (CurrentHealth > MaxHealth)
+        {
+            CurrentHealth = MaxHealth;
+        }
+        UpdateHealthText();
+    }
+
+    public void AddStatusEffect(StatusEffectType type, int stackCount)
+    {
+        if (stackCount <= 0) return;
+
         if (statusEffects.ContainsKey(type))
         {
-            statusEffects[type]+=stackCount;//已有此效果，直接增加層數
+            statusEffects[type] += stackCount;
         }
         else
         {
-            statusEffects.Add(type,stackCount);//還沒有此效果就新增
+            statusEffects.Add(type, stackCount);
         }
-        statusEffectsUI.UpdateStatusEffectUI(type,GetStatusEffectStacks(type));//更新此狀態效果的顯示
+
+        statusEffectsUI?.UpdateStatusEffectUI(type, GetStatusEffectStacks(type));
     }
-    public void RemoveStatusEffect(StatusEffectType type,int stackCount)//移除指定狀態效果的層數
+
+    public void RemoveStatusEffect(StatusEffectType type, int stackCount)
+    {
+        if (stackCount <= 0) return;
+
+        if (statusEffects.ContainsKey(type))
+        {
+            statusEffects[type] -= stackCount;
+            if (statusEffects[type] <= 0)
+            {
+                statusEffects.Remove(type);
+            }
+        }
+
+        statusEffectsUI?.UpdateStatusEffectUI(type, GetStatusEffectStacks(type));
+    }
+
+    public int GetStatusEffectStacks(StatusEffectType type)
     {
         if (statusEffects.ContainsKey(type))
         {
-            statusEffects[type]-=stackCount;//扣除層數
-            if (statusEffects[type] <= 0)
-            {
-                statusEffects.Remove(type);//層數歸零，從字典移除
-            }
+            return statusEffects[type];
         }
-        statusEffectsUI.UpdateStatusEffectUI(type,GetStatusEffectStacks(type));//更新UI
+        return 0;
     }
-    public int GetStatusEffectStacks(StatusEffectType type)//取得指定狀態效果目前的層數
+
+    private void UpdateHealthText()
     {
-        if(statusEffects.ContainsKey(type))return statusEffects[type];
-        else return 0;
+        healthText.text = "HP: " + CurrentHealth;
+    }
+
+    private void ReduceStatusIfPresent(StatusEffectType type, int amount)
+    {
+        if (GetStatusEffectStacks(type) <= 0) return;
+        RemoveStatusEffect(type, amount);
     }
 }

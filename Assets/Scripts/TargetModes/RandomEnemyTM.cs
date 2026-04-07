@@ -1,8 +1,10 @@
 using System.Collections.Generic;
 using UnityEngine;
+
 /// <summary>
-/// 實作隨機單一敵人的目標選取模式
+/// 從現存敵人中隨機挑選一個目標。
 /// </summary>
+
 public class RandomEnemyTM : TargetMode
 {
     public override List<CombatantView> GetTargets()//從目前敵人清單隨機挑1位並以List回傳

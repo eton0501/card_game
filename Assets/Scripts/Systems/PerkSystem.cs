@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
+
 /// <summary>
-/// 管理玩家目前擁有的天賦清單，並同步處理UI顯示與事件訂閱
+/// 管理玩家目前持有的Perk，並串接Perk的啟用和移除與UI更新。
 /// </summary>
+
+
 public class PerkSystem : Singleton<PerkSystem>
 {
     [SerializeField] private PerksUI perksUI;//天賦UI

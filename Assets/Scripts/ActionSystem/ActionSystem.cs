@@ -4,9 +4,11 @@ using System.Collections;
 using System.Runtime.CompilerServices;
 using Unity.VisualScripting;
 using UnityEngine;
+
 /// <summary>
-/// 統一管理所有遊戲行動的順序、連鎖反應
+/// 統一管理所有GameAction的執行流程，包含PRE/PER/POST狀態和Performer註冊與訂閱回呼觸發。
 /// </summary>
+
 public class ActionSystem : Singleton<ActionSystem>//宣告類別，繼承自Singleton
 {
     private List<GameAction> reactions=null;//目前正在關注的反應串列(PRE、PER、POST)

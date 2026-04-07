@@ -1,9 +1,12 @@
 using System.Collections.Generic;
 using System.Linq;
 using UnityEngine;
+
 /// <summary>
-/// 管理天賦列表UI，新增天賦時建立對應的PerkUI
+/// 管理Perk圖示列，新增或移除Perk時同步更新UI。
 /// </summary>
+
+
 public class PerksUI : MonoBehaviour
 {
     [SerializeField] private PerkUI perkUIPrefb;//PerkUI預製體

@@ -1,38 +1,55 @@
 using UnityEngine;
+
 /// <summary>
-/// 負責管理英雄相關邏輯的系統
+/// 負責英雄初始化與回合反應。
 /// </summary>
+
+
 public class HeroSystem : Singleton<HeroSystem>
 {
-    [field:SerializeField] public HeroView HeroView {get;private set;}//英雄的視覺元件
-    void OnEnable()
+    [field: SerializeField] public HeroView HeroView { get; private set; }
+
+    private void OnEnable()
     {
-        ActionSystem.SubscribeReaction<EnemyTurnGA>(EnemyTurnPreReaction,ReactionTiming.PRE);//敵人回合開始前，先棄掉所有手牌
-        ActionSystem.SubscribeReaction<EnemyTurnGA>(EnemyTurnPostReaction,ReactionTiming.POST);//敵人回合結束後，結算燒傷和摸新手牌
+        ActionSystem.SubscribeReaction<EnemyTurnGA>(EnemyTurnPreReaction, ReactionTiming.PRE);
+        ActionSystem.SubscribeReaction<EnemyTurnGA>(EnemyTurnPostReaction, ReactionTiming.POST);
     }
-    void OnDisable()
+
+    private void OnDisable()
     {
-        ActionSystem.UnsubscribeReaction<EnemyTurnGA>(EnemyTurnPreReaction,ReactionTiming.PRE);
-        ActionSystem.UnsubscribeReaction<EnemyTurnGA>(EnemyTurnPostReaction,ReactionTiming.POST);
+        ActionSystem.UnsubscribeReaction<EnemyTurnGA>(EnemyTurnPreReaction, ReactionTiming.PRE);
+        ActionSystem.UnsubscribeReaction<EnemyTurnGA>(EnemyTurnPostReaction, ReactionTiming.POST);
     }
-    public void Setup(HeroData heroData)//初始化英雄
+
+    public void Setup(HeroData heroData)
     {
-        HeroView.Setup(heroData);//將HeroData傳給HeroView設定血量和圖片
+        HeroView.Setup(heroData);
     }
-    private void EnemyTurnPreReaction(EnemyTurnGA enemyTurnGA)//敵人回合開始前先棄掉所有手牌
+
+    private void EnemyTurnPreReaction(EnemyTurnGA enemyTurnGA)
     {
-        DiscardAllCardsGA discardAllCardsGA=new();
+        if (HeroView == null) return;
+
+        
+        HeroView.TickTurnBasedDebuffs();
+
+        
+        DiscardAllCardsGA discardAllCardsGA = new();
         ActionSystem.Instance.AddReaction(discardAllCardsGA);
-    }
-    private void EnemyTurnPostReaction(EnemyTurnGA enemyTurnGA)//敵人回合結束後觸發
-    {
-        int burnStacks=HeroView.GetStatusEffectStacks(StatusEffectType.BURN);//取得英雄身上的燒傷層數
+
+        
+        int burnStacks = HeroView.GetStatusEffectStacks(StatusEffectType.BURN);
         if (burnStacks > 0)
         {
-            ApplyBurnGA applyBurnGA=new(burnStacks,HeroView);
+            ApplyBurnGA applyBurnGA = new(burnStacks, HeroView);
             ActionSystem.Instance.AddReaction(applyBurnGA);
         }
-        DrawCardsGA drawCardsGA=new(5);//抽五張牌
+    }
+
+    private void EnemyTurnPostReaction(EnemyTurnGA enemyTurnGA)
+    {
+        
+        DrawCardsGA drawCardsGA = new(5);
         ActionSystem.Instance.AddReaction(drawCardsGA);
     }
 }

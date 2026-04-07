@@ -1,8 +1,11 @@
 using System.Collections;
 using UnityEngine;
+
 /// <summary>
-/// 管理玩家的法力系統
+/// 管理法力上限與當前值，處理花費法力與回合切換時回滿法力。
 /// </summary>
+
+
 public class ManaSystem : Singleton<ManaSystem>
 {
     [SerializeField] private ManaUI manaUI;//顯示法力的UI元件

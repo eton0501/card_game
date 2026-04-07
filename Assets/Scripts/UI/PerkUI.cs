@@ -1,9 +1,12 @@
 
 using UnityEngine;
 using UnityEngine.UI;
+
 /// <summary>
-/// 控制單一天賦圖示的UI顯示，負責把Perk資料綁到畫面元件上
+/// 顯示單一Perk的圖示與綁定資料。
 /// </summary>
+
+
 public class PerkUI : MonoBehaviour
 {
     [SerializeField] private Image image;//天賦圖示元件

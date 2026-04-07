@@ -14,6 +14,7 @@ MonoBehaviour:
   m_EditorClassIdentifier: 
   <Description>k__BackingField: Deal 10 Damage to all enemies.
   <Mana>k__BackingField: 1
+  <ShopCost>k__BackingField: 30
   <Image>k__BackingField: {fileID: 21300000, guid: 2dc4c6fa381095b428b5a329fff397d0, type: 3}
   <ManualTargetEffect>k__BackingField:
     rid: -2

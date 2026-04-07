@@ -1,6 +1,11 @@
 using DG.Tweening;
 using UnityEngine;
 
+/// <summary>
+/// 依照Card資料在場景建立CardView物件，作為手牌的視覺實例工廠。
+/// </summary>
+
+
 public class CardViewCreator : Singleton<CardViewCreator>
 {
     [SerializeField] private CardView cardViewPrefab;//卡牌視圖的Prefab

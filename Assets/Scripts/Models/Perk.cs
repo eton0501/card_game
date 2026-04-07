@@ -1,9 +1,12 @@
 using System;
 using System.Collections.Generic;
 using UnityEngine;
+
 /// <summary>
-/// 主要是天賦實例的執行邏輯
+/// 負責訂閱條件、檢查條件成立並把效果加入ActionSystem。
 /// </summary>
+
+
 public class Perk 
 {
     public Sprite Image=>data.Image;//對外提供天賦圖片

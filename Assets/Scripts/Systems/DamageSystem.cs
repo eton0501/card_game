@@ -1,37 +1,53 @@
 using System.Collections;
 using UnityEngine;
+
 /// <summary>
-/// 負責執行傷害結算的系統
+/// 結算DealDamageGA，套用Weak或Vulnerable等修正後造成傷害並處理目標死亡。
 /// </summary>
+
+
 public class DamageSystem : MonoBehaviour
 {
-    [SerializeField] private GameObject damageVFX;//受傷時撥放的特效
-    void OnEnable()
+    [SerializeField] private GameObject damageVFX;
+
+    private void OnEnable()
     {
         ActionSystem.AttachPerformer<DealDamageGA>(DealDamagePerformer);
     }
-    void OnDisable()
+
+    private void OnDisable()
     {
         ActionSystem.DetachPerformer<DealDamageGA>();
     }
-    private IEnumerator DealDamagePerformer(DealDamageGA dealDamageGA)//傷害結算的執行邏輯
+
+    private IEnumerator DealDamagePerformer(DealDamageGA dealDamageGA)
     {
-        foreach(var target in dealDamageGA.Targets)
+        if (dealDamageGA == null || dealDamageGA.Targets == null) yield break;
+
+        foreach (CombatantView target in dealDamageGA.Targets)
         {
-            target.Damage(dealDamageGA.Amount);//對目標造成傷害
-            Instantiate(damageVFX,target.transform.position,Quaternion.identity);//在目標位置生成受傷特效
-            yield return new WaitForSeconds(0.15f);
-            if (target.CurrentHealth <= 0)//判斷目標血量是否歸零
+            if (target == null) continue;
+
+            int finalDamage = Mathf.Max(0, dealDamageGA.Amount);
+            if (dealDamageGA.Caster != null)
             {
-                if(target is EnemyView enemyView)//如果目標是敵人
-                {
-                    KillEnemyGA killEnemyGA=new(enemyView);
-                    ActionSystem.Instance.AddReaction(killEnemyGA);//加入擊殺敵人的行動
-                }
-                else
-                {
-                    
-                }
+                finalDamage = dealDamageGA.Caster.ModifyOutgoingAttackDamage(finalDamage);
+            }
+
+            finalDamage = target.ModifyIncomingAttackDamage(finalDamage);
+            target.Damage(finalDamage);
+
+            if (damageVFX != null)
+            {
+                Instantiate(damageVFX, target.transform.position, Quaternion.identity);
+            }
+
+            yield return new WaitForSeconds(0.15f);
+
+            if (target.CurrentHealth <= 0 && target is EnemyView enemyView)
+            {
+                KillEnemyGA killEnemyGA = new(enemyView);
+                ActionSystem.Instance.AddReaction(killEnemyGA);
             }
         }
     }

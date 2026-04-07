@@ -1,7 +1,10 @@
 using UnityEngine;
+
 /// <summary>
-/// 負責保存本次被擊殺的EnemyView，給ActionSystem使用
+/// 擊殺指定敵人的行動資料。
 /// </summary>
+
+
 public class KillEnemyGA : GameAction
 {
     public EnemyView EnemyView{get;private set;}

@@ -1,7 +1,10 @@
 using UnityEngine;
+
 /// <summary>
-/// 代表敵人攻擊英雄的遊戲行動
+/// 描述敵人對英雄發動攻擊的行動資料。
 /// </summary>
+
+
 public class AttackHeroGA : GameAction,IHaveCaster
 {
     public EnemyView Attacker{get;private set;}//發動攻擊的敵人

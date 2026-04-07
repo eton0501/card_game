@@ -268,6 +268,8 @@ MonoBehaviour:
   statusEffectUIPrefab: {fileID: 998937361669259090, guid: 19853b73d8b4e9745bdd72db4dfc378d, type: 3}
   armorSprite: {fileID: 21300000, guid: c3ecb1c5187152149bccacb593e483fb, type: 3}
   burnSprite: {fileID: 21300000, guid: 591b5194960a04c4a92a8edcff5403e5, type: 3}
+  weakSprite: {fileID: 21300000, guid: a4dd152b565d469409d36e6706f995f5, type: 3}
+  vulnerableSprite: {fileID: 21300000, guid: 7155fdd4aaa48724fbb9184810e8872d, type: 3}
 --- !u!114 &2024893057995167189
 MonoBehaviour:
   m_ObjectHideFlags: 0

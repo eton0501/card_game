@@ -1,7 +1,10 @@
 using UnityEngine;
+
 /// <summary>
-/// 代表消耗法力的遊戲行動
+/// 消耗法力的行動資料。
 /// </summary>
+
+
 public class SpendManaGA : GameAction
 {
     public int Amount{get;set;}//這次要消耗的法力

@@ -1,21 +1,95 @@
 using System.Collections.Generic;
 using UnityEngine;
-using UnityEngine.UIElements;
+
 /// <summary>
-/// 負責初始化一場戰鬥所需的所有系統
+/// 建立一場新遊戲與每次遭遇開局，負責初始化英雄、牌組、敵人與起手狀態。
 /// </summary>
+
+
 public class MatchSetupSystem : MonoBehaviour
 {
-   [SerializeField] private HeroData heroData;//英雄的資料
-   [SerializeField] private PerkData perkData;//這場戰鬥攜帶的天賦資料
-   [SerializeField] private List<EnemyData> enemyDatas;//這場戰鬥出現的所有敵人資料
+    [SerializeField] private HeroData heroData;
+    [SerializeField] private PerkData perkData;
+    [SerializeField] private List<EnemyData> enemyDatas;
+    [SerializeField] private bool autoStart = false;
+    [Header("Encounter Difficulty Multipliers")]
+    [SerializeField] private float battleHealthMultiplier = 1f;
+    [SerializeField] private float battleAttackMultiplier = 1f;
+    [SerializeField] private float eliteHealthMultiplier = 1.35f;
+    [SerializeField] private float eliteAttackMultiplier = 1.25f;
+    [SerializeField] private float bossHealthMultiplier = 1.8f;
+    [SerializeField] private float bossAttackMultiplier = 1.45f;
+
+    private bool hasSetupCore = false;
+
     private void Start()
     {
-        HeroSystem.Instance.Setup(heroData);//初始化英雄系統
-        EnemySystem.Instance.Setup(enemyDatas);//初始化敵人系統
-        CardSystem.Instance.Setup(heroData.Deck);//初始化卡牌系統
-        PerkSystem.Instance.AddPerk(new Perk(perkData));//將這場戰鬥的天賦加入天賦系統
-        DrawCardsGA drawCardsGA=new(5);//建立摸五張牌的行動
-        ActionSystem.Instance.Perform(drawCardsGA);//交給ActionSystem執行
+        if (autoStart)
+        {
+            SetupMatch();
+        }
+    }
+
+    public void SetupMatch()
+    {
+        SetupEncounter(enemyDatas, MapNodeType.Battle);
+    }
+
+    public void SetupEncounter(List<EnemyData> encounterEnemies)
+    {
+        SetupEncounter(encounterEnemies, MapNodeType.Battle);
+    }
+
+    public void SetupEncounter(List<EnemyData> encounterEnemies, MapNodeType nodeType)
+    {
+        bool justSetupCore = EnsureCoreSetup();
+        if (!justSetupCore)
+        {
+            CardSystem.Instance.StartEncounterDeck();
+        }
+
+        GetMultipliersByNodeType(nodeType, out float healthMultiplier, out float attackMultiplier);
+        EnemySystem.Instance.Setup(encounterEnemies, healthMultiplier, attackMultiplier);
+
+        RefillManaGA refillManaGA = new();
+        ActionSystem.Instance.Perform(refillManaGA, () =>
+        {
+            DrawCardsGA drawCardsGA = new(5);
+            ActionSystem.Instance.Perform(drawCardsGA);
+        });
+    }
+
+    private void GetMultipliersByNodeType(
+        MapNodeType nodeType,
+        out float healthMultiplier,
+        out float attackMultiplier
+    )
+    {
+        switch (nodeType)
+        {
+            case MapNodeType.Elite:
+                healthMultiplier = eliteHealthMultiplier;
+                attackMultiplier = eliteAttackMultiplier;
+                return;
+            case MapNodeType.Boss:
+                healthMultiplier = bossHealthMultiplier;
+                attackMultiplier = bossAttackMultiplier;
+                return;
+            default:
+                healthMultiplier = battleHealthMultiplier;
+                attackMultiplier = battleAttackMultiplier;
+                return;
+        }
+    }
+
+    private bool EnsureCoreSetup()
+    {
+        if (hasSetupCore) return false;
+        hasSetupCore = true;
+
+        HeroSystem.Instance.Setup(heroData);
+        CardSystem.Instance.Setup(heroData.Deck);
+        PerkSystem.Instance.AddPerk(new Perk(perkData));
+        return true;
     }
 }

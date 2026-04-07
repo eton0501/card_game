@@ -1,7 +1,8 @@
 using System.Collections.Generic;
 /// <summary>
-/// 所有卡牌效果的抽象基底類別
+/// 所有效果類型的抽象基底，規範效果必須能轉換成可執行的 GameAction。
 /// </summary>
+
 [System.Serializable]//讓子類別可以在Unspector中被編輯
 
 public abstract class Effect 

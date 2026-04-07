@@ -1,7 +1,10 @@
 using UnityEngine;
+
 /// <summary>
-/// 代表抽牌的遊戲行動
+/// 描述一次抽牌行動與抽牌數量。
 /// </summary>
+
+
 public class DrawCardsGA : GameAction
 {
     public int Amount{get;set;}//這次行動要抽幾張牌

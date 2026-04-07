@@ -1,8 +1,11 @@
 using TMPro;
 using UnityEngine;
+
 /// <summary>
-/// 負責顯示玩家目前法力值的UI文件
+/// 顯示當前法力與最大法力。
 /// </summary>
+
+
 public class ManaUI : MonoBehaviour
 {
     [SerializeField] private TMP_Text mana;//顯示法力的文字元件

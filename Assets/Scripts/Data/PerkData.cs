@@ -3,10 +3,9 @@ using SerializeReferenceEditor;
 using Unity.VisualScripting;
 using UnityEditor.ShaderKeywordFilter;
 /// <summary>
-/// 定義Perk的資料資產
+/// 儲存 Perk 的條件與效果設定，定義該 Perk 觸發時要作用的目標與行為。
 /// </summary>
 [CreateAssetMenu(menuName ="Data/Perk")]
-
 public class PerkData : ScriptableObject
 {
     [field:SerializeField] public Sprite Image{get;private set;}//天賦顯示用圖片

@@ -4,5 +4,8 @@ using UnityEngine;
 /// </summary>
 public enum StatusEffectType 
 {
-    ARMOR,BURN
+    ARMOR,
+    BURN,
+    WEAK,
+    VULNERABLE
 }

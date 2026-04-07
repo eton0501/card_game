@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
+
 /// <summary>
-/// 抽牌效果的具體實作
-/// 繼承自Effect，當卡牌效果觸發時產生抽牌行動
+/// 把抽牌效果轉成 DrawCardsGA，讓卡牌可以觸發抽牌行為。
 /// </summary>
+
+
 public class DrawCardsEffect : Effect
 {
     [SerializeField] private int drawAmount;//要抽幾張牌，可以在Inspector中設定

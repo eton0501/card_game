@@ -1,8 +1,10 @@
 using UnityEngine;
+
 /// <summary>
-/// 代表出牌的遊戲行動
-/// 根據卡牌是否需要手動選擇目標，提供兩種建構方式
+/// 一張牌被打出的行動資料，包含卡牌本體與可選的手動目標。
 /// </summary>
+
+
 public class PlayCardGA : GameAction
 {
     public EnemyView ManualTarget{get;private set;}//手動選擇目標的敵人

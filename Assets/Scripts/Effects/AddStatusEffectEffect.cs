@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
+
 /// <summary>
-/// 主要是把新增狀態的效果資料轉成可執行的遊戲行動
+/// 把附加狀態包裝成Effect，讓卡牌可透過EffectSystem轉成GameAction執行。
 /// </summary>
+
+
 public class AddStatusEffectEffect : Effect
 {
     [SerializeField] private StatusEffectType statusEffectType;//要附加的狀態效果

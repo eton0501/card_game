@@ -1,9 +1,11 @@
 using System.Collections;
 using UnityEngine;
+
 /// <summary>
-///負責執行所有卡牌效果的系統
-/// 將PerforEffectGA中的Effect轉換成具體的遊戲行動並交給ActionSystem執行
+/// 接收PerformEffectGA並呼叫Effect產生對應的GameAction，再加入ActionSystem反應串。
 /// </summary>
+
+
 public class EffectSystem : MonoBehaviour
 {
     void OnEnable()//啟用時向ActionSystem註冊效果執行者

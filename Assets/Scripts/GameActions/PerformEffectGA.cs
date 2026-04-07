@@ -1,9 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
+
 /// <summary>
-/// 代表執行卡牌效果的遊戲行動
-/// 將Effect和Targets打包在一起交給ActionSystem執行
+/// Effect的執行請求，包含要執行的效果與目標清單。
 /// </summary>
+
+
 public class PerformEffectGA : GameAction
 {
     public Effect Effect{get;set;}//要執行的效果

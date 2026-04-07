@@ -1,23 +1,31 @@
 using System.Collections;
 using UnityEngine;
+
 /// <summary>
-/// 註冊並執行新增狀態效果行動的Performer
+/// 註冊AddStatusEffectGA的執行器，把指定狀態與層數套用到目標。
 /// </summary>
+
+
 public class StatusEffectStstem : MonoBehaviour
 {
     private void OnEnable()
     {
-        ActionSystem.AttachPerformer<AddStatusEffectGA>(AddStatusEffectPerformer);//向ActionSystem註冊AddStatusEffectGA
+        ActionSystem.AttachPerformer<AddStatusEffectGA>(AddStatusEffectPerformer);
     }
+
     private void OnDisable()
     {
-        ActionSystem.DetachPerformer<AddStatusEffectGA>();//取消註冊
+        ActionSystem.DetachPerformer<AddStatusEffectGA>();
     }
-    private IEnumerator AddStatusEffectPerformer(AddStatusEffectGA addStatusEffectGA)//AddStatusEffectGA的實際執行邏輯
+
+    private IEnumerator AddStatusEffectPerformer(AddStatusEffectGA addStatusEffectGA)
     {
-        foreach(var target in addStatusEffectGA.Targets)//逐一處理每個目標
+        if (addStatusEffectGA == null || addStatusEffectGA.Targets == null) yield break;
+
+        foreach (CombatantView target in addStatusEffectGA.Targets)
         {
-            target.AddStatusEffect(addStatusEffectGA.StatusEffectType,addStatusEffectGA.StackCount);//對目標增加狀態和層數
+            if (target == null) continue;
+            target.AddStatusEffect(addStatusEffectGA.StatusEffectType, addStatusEffectGA.StackCount);
             yield return null;
         }
     }

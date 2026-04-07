@@ -1,8 +1,11 @@
 using System.Collections.Generic;
 using UnityEngine;
+
 /// <summary>
-/// 代表造成傷害的遊戲行動
+/// 描述一次傷害行動：傷害值、施放者與目標清單。
 /// </summary>
+
+
 public class DealDamageGA : GameAction,IHaveCaster
 {
     public int Amount{get;set;}//造成的傷害量
