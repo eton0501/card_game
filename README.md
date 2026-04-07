@@ -9,7 +9,8 @@
 
 ## 遊戲畫面
 ![戰鬥畫面截圖](./Screenshots/cardgame1.png)
-![地圖畫面](<img width="1079" height="986" alt="image" src="https://github.com/user-attachments/assets/66c8db5c-b605-4628-8195-c0ae85699a65" />)
+![地圖畫面](./Screenshots/cardgame2.png)
+![商店畫面](./Screenshots/cardgame3.png)
 ---
 ## 專案簡介
 這個專案使用Unity製作，核心特色是把戰鬥中的行為都抽象成 `GameAction`，由 `ActionSystem` 統一使用。
